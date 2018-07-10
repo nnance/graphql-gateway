@@ -1,0 +1,9 @@
+{
+	"devDependencies": {
+		"@types/graphql": "^0.13.3",
+		"@types/hapi": "^17.0.15",
+		"lerna": "^2.11.0",
+		"tslint": "^5.10.0",
+		"typescript": "^2.9.2"
+	}
+}
