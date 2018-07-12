@@ -1,6 +1,18 @@
 import {
+    introspectSchema,
     makeExecutableSchema,
+    makeRemoteExecutableSchema,
+    mergeSchemas,
 } from "graphql-tools";
+
+import { createHttpLink } from "apollo-link-http";
+import { GraphQLSchema } from "graphql";
+
+async function getSchema(uri: string) {
+    const link = createHttpLink({ uri, fetch: require("node-fetch") });
+    const schema = await introspectSchema(link);
+    return makeRemoteExecutableSchema({ link, schema });
+}
 
 interface IUser {
     _id: string;
@@ -26,7 +38,13 @@ const typeDefs = `
     type User {
         _id: ID!
         username: String
-        blogs: [ID!]
+        blogs: [Blog]
+    }
+    type Blog {
+        _id: ID!
+        user: User
+        title: String!
+        text: String
     }
     type Query {
         users: [User]
@@ -36,9 +54,38 @@ const typeDefs = `
 
 const resolvers = {
     Query: {
-        userById: (obj: any, args: any) => userById(args.id),
+        userById: (obj: any, args: any, context: any) => {
+            context.user = userById(args.id);
+            return context.user;
+        },
         users: () => users,
     },
 };
 
-export default makeExecutableSchema({typeDefs, resolvers});
+const remoteResolvers = (subschema: GraphQLSchema) => ({
+    User: {
+        blogs: (parent: any, args: any, context: any, info: any) => {
+            return info.mergeInfo.delegateToSchema({
+                args: {
+                    id: context.user._id,
+                },
+                context,
+                fieldName: "blogsForUser",
+                info,
+                operation: "query",
+                schema: subschema,
+            });
+        },
+    },
+});
+
+export default async () => {
+    const blogSchema = await getSchema("http://localhost:3001/graphql");
+    return mergeSchemas({
+        resolvers: remoteResolvers(blogSchema),
+        schemas: [
+            blogSchema,
+            makeExecutableSchema({typeDefs, resolvers}),
+        ],
+    });
+};

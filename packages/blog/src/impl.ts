@@ -6,7 +6,7 @@ import {
 } from "graphql-tools";
 
 import { createHttpLink } from "apollo-link-http";
-import { GraphQLSchema } from "../node_modules/@types/graphql";
+import { GraphQLSchema } from "graphql";
 
 async function getSchema(uri: string) {
     const link = createHttpLink({ uri, fetch: require("node-fetch") });
@@ -32,12 +32,13 @@ const blogs = [
 ];
 
 const getBlog = (id: string) => blogs.find((u) => u._id === id);
+const getBlogsForUser = (id: string) => blogs.filter((u) => u.user === id);
 
 const typeDefs = `
     type User {
         _id: ID!
         username: String
-        blogs: [ID!]
+        blogs: [Blog]
     }
 
     type Blog {
@@ -50,6 +51,7 @@ const typeDefs = `
     type Query {
         blogs: [Blog]
         blogById(id: ID!): Blog
+        blogsForUser(id: ID!): [Blog]
     }
 `;
 
@@ -60,6 +62,7 @@ const resolvers = {
             return context.blog;
         },
         blogs: () => blogs,
+        blogsForUser: (obj: any, args: any) => getBlogsForUser(args.id),
     },
 };
 
