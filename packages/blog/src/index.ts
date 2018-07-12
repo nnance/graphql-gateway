@@ -5,7 +5,7 @@ import {
 
 import Hapi from "hapi";
 
-import schema from "./impl";
+import remoteSchema from "./impl";
 
 const HOST = "localhost";
 const PORT = 3001;
@@ -16,6 +16,8 @@ async function StartServer() {
     host: HOST,
     port: PORT,
   });
+
+  const schema = await remoteSchema();
 
   await server.register({
     options: {
