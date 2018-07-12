@@ -6,3 +6,6 @@ logs
 
 # Dependency directory
 node_modules
+
+# ide files
+.vscode

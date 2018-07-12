@@ -1,9 +1,4 @@
 import {
-    DocumentNode,
-    ExecutionResult,
-} from "graphql";
-
-import {
     introspectSchema,
     makeRemoteExecutableSchema,
     mergeSchemas,
@@ -18,10 +13,10 @@ async function getSchema(uri: string) {
 }
 
 export default async () => {
-    const userLink = await getSchema("http://localhost:3000/graphql");
-    const blogLink = await getSchema("http://localhost:3001/graphql");
-
     return mergeSchemas({
-        schemas: [ userLink, blogLink ],
+        schemas: [
+            await getSchema("http://localhost:3000/graphql"),
+            await getSchema("http://localhost:3001/graphql"),
+        ],
     });
 };
