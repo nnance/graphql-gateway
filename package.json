@@ -1,11 +1,13 @@
 {
+	"scripts": {
+		"postinstall": "lerna bootstrap",
+		"clean": "lerna clean",
+		"compile": "lerna run compile"
+	},
 	"devDependencies": {
 		"@types/graphql": "^0.13.3",
 		"@types/hapi": "^17.0.15",
-		"lerna": "^2.11.0",
-		"nodemon": "^1.17.5",
-		"tslint": "^5.10.0",
-		"typescript": "^2.9.2"
+		"lerna": "^2.11.0"
 	},
 	"dependencies": {}
 }

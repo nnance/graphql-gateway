@@ -22,5 +22,9 @@
     "hapi": "^17.5.2",
     "node-fetch": "^2.1.2",
     "schema": "^1.0.0"
+  },
+  "devDependencies": {
+    "tslint": "^5.10.0",
+    "typescript": "^2.9.2"
   }
 }

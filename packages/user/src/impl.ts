@@ -8,6 +8,8 @@ import {
 import { createHttpLink } from "apollo-link-http";
 import { GraphQLSchema } from "graphql";
 
+import { blog, user } from "schema";
+
 async function getSchema(uri: string) {
     const link = createHttpLink({ uri, fetch: require("node-fetch") });
     const schema = await introspectSchema(link);
@@ -20,32 +22,21 @@ interface IUser {
     username: string;
 }
 
-const user = (id: string, username: string, blogs?: string[]): IUser => ({
+const userFactory = (id: string, username: string, blogs?: string[]): IUser => ({
     _id: id, blogs, username,
 });
 
 const users = [
-    user("1", "test-user-1"),
-    user("2", "test-user-2"),
-    user("3", "test-user-3"),
+    userFactory("1", "test-user-1"),
+    userFactory("2", "test-user-2"),
+    userFactory("3", "test-user-3"),
 ];
 
 const userById = (id: string) => {
     return users.find((u) => u._id === id);
 };
 
-const typeDefs = `
-    type User {
-        _id: ID!
-        username: String
-        blogs: [Blog]
-    }
-    type Blog {
-        _id: ID!
-        user: User
-        title: String!
-        text: String
-    }
+const typeDefs = user + blog + `
     type Query {
         users: [User]
         userById(id: ID!): User
