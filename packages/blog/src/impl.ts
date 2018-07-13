@@ -1,20 +1,13 @@
 import {
-    introspectSchema,
     makeExecutableSchema,
-    makeRemoteExecutableSchema,
     mergeSchemas,
 } from "graphql-tools";
 
-import { createHttpLink } from "apollo-link-http";
 import { GraphQLSchema } from "graphql";
 
 import { blog, user } from "schema";
 
-async function getSchema(uri: string) {
-    const link = createHttpLink({ uri, fetch: require("node-fetch") });
-    const schema = await introspectSchema(link);
-    return makeRemoteExecutableSchema({ link, schema });
-}
+import { getSchema } from "core";
 
 interface IBlog {
     _id: string;
