@@ -2,8 +2,10 @@
   "name": "schema",
   "version": "1.0.0",
   "description": "Shared Schemas",
-  "main": "index.js",
+  "main": "dist/index.js",
   "scripts": {
+    "compile": "tsc",
+    "lint": "tslint ./src",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [
