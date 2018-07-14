@@ -10,8 +10,8 @@ import remoteSchema from "./impl";
 import { getBlog } from "core";
 
 async function StartServer() {
-
-  const server = new Hapi.Server(getBlog());
+  const {host, port} = getBlog();
+  const server = new Hapi.Server({host, port});
 
   const schema = await remoteSchema();
 
