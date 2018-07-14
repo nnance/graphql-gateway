@@ -4,6 +4,8 @@
   "description": "GraphQL Core",
   "main": "./dist/index.js",
   "scripts": {
+    "compile": "tsc",
+    "lint": "tslint ./src",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "Nick Nance",
@@ -17,5 +19,9 @@
   "typings": "dist/index.d.ts",
   "typescript": {
     "definition": "dist/index.d.ts"
+  },
+  "devDependencies": {
+    "tslint": "^5.10.0",
+    "typescript": "^2.9.2"
   }
 }

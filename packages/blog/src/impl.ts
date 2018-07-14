@@ -7,7 +7,7 @@ import { GraphQLSchema } from "graphql";
 
 import { blog, user } from "schema";
 
-import { getSchema } from "core";
+import { getSchema, getUser } from "core";
 
 interface IBlog {
     _id: string;
@@ -66,7 +66,8 @@ const remoteResolvers = (subschema: GraphQLSchema) => ({
 });
 
 export default async () => {
-    const userSchema = await getSchema("http://localhost:3000/graphql");
+    const addr = getUser();
+    const userSchema = await getSchema(`${addr.host}:${addr.port}/graphql`);
     return mergeSchemas({
         resolvers: remoteResolvers(userSchema),
         schemas: [

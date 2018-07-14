@@ -1,1 +1,2 @@
-export { getSchema } from './schema-stitching'
+export * from "./schema-stitching";
+export * from "./config";

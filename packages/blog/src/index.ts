@@ -7,15 +7,11 @@ import Hapi from "hapi";
 
 import remoteSchema from "./impl";
 
-const HOST = "localhost";
-const PORT = 3001;
+import { getBlog } from "core";
 
 async function StartServer() {
 
-  const server = new Hapi.Server({
-    host: HOST,
-    port: PORT,
-  });
+  const server = new Hapi.Server(getBlog());
 
   const schema = await remoteSchema();
 

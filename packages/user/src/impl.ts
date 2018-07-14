@@ -5,16 +5,11 @@ import {
     mergeSchemas,
 } from "graphql-tools";
 
-import { createHttpLink } from "apollo-link-http";
 import { GraphQLSchema } from "graphql";
 
 import { blog, user } from "schema";
 
-async function getSchema(uri: string) {
-    const link = createHttpLink({ uri, fetch: require("node-fetch") });
-    const schema = await introspectSchema(link);
-    return makeRemoteExecutableSchema({ link, schema });
-}
+import { getBlog, getSchema } from "core";
 
 interface IUser {
     _id: string;
@@ -71,7 +66,8 @@ const remoteResolvers = (subschema: GraphQLSchema) => ({
 });
 
 export default async () => {
-    const blogSchema = await getSchema("http://localhost:3001/graphql");
+    const addr = getBlog();
+    const blogSchema = await getSchema(`${addr.host}:${addr.port}/graphql`);
     return mergeSchemas({
         resolvers: remoteResolvers(blogSchema),
         schemas: [
