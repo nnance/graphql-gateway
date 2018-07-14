@@ -11,7 +11,13 @@
   ],
   "author": "Nick Nance",
   "license": "ISC",
-  "dependencies": {
-    "core": "^1.0.0"
+  "dependencies": {},
+  "devDependencies": {
+    "tslint": "^5.10.0",
+    "typescript": "^2.9.2"
+  },
+  "typings": "dist/index.d.ts",
+  "typescript": {
+    "definition": "dist/index.d.ts"
   }
 }
