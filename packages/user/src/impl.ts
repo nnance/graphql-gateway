@@ -66,12 +66,11 @@ const remoteResolvers = (subschema: GraphQLSchema) => ({
 });
 
 export default async () => {
-    const addr = getBlog();
-    const blogSchema = await getSchema(`${addr.host}:${addr.port}/graphql`);
+    const {host, port, protocol} = getBlog();
+    // const blogSchema = await getSchema(`${protocol}://${host}:${port}/graphql`);
     return mergeSchemas({
-        resolvers: remoteResolvers(blogSchema),
+        // resolvers: remoteResolvers(blogSchema),
         schemas: [
-            blogSchema,
             makeExecutableSchema({typeDefs, resolvers}),
         ],
     });
