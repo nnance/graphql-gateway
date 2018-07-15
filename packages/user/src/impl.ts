@@ -7,7 +7,11 @@ import {
 
 import { GraphQLSchema } from "graphql";
 
-import { blog, user } from "schema";
+import {
+    user,
+    userQuery,
+    userWithBlogs,
+} from "schema";
 
 import { getBlog, getSchema } from "core";
 
@@ -30,13 +34,6 @@ const users = [
 const userById = (id: string) => {
     return users.find((u) => u._id === id);
 };
-
-const typeDefs = user + blog + `
-    type Query {
-        users: [User]
-        userById(id: ID!): User
-    }
-`;
 
 const resolvers = {
     Query: {
@@ -71,7 +68,7 @@ export default async () => {
     return mergeSchemas({
         // resolvers: remoteResolvers(blogSchema),
         schemas: [
-            makeExecutableSchema({typeDefs, resolvers}),
+            makeExecutableSchema({typeDefs: [user, userQuery], resolvers}),
         ],
     });
 };

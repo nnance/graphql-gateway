@@ -1,10 +1,11 @@
 import {
+    makeExecutableSchema,
     mergeSchemas,
 } from "graphql-tools";
 
 import { GraphQLSchema } from "graphql";
 
-import { blog } from "schema";
+import { blog, blogQuery, blogWithUser } from "schema";
 
 import { getSchema, getUser } from "core";
 
@@ -28,13 +29,8 @@ const blogs = [
     blogFactory("3", "Blog Post 3", "3"),
 ];
 
-const typeDefs = blog + `
-    type Query {
-        blogs: [Blog]
-        blogById(id: ID!): Blog
-        blogsForUser(id: ID!): [Blog]
-    }
-`;
+const typeDefs = blog + blogQuery;
+const remoteTypeDefs = blogWithUser + blogQuery;
 
 const resolvers = {
     Query: {
@@ -62,21 +58,41 @@ const remoteResolvers = (subschema: GraphQLSchema) => ({
             },
         },
     },
-    Query: {
-        blogById: (obj: any, args: any, context: any) => getBlog(args.id),
-        blogs: () => blogs,
-        blogsForUser: (obj: any, args: any) => getBlogsForUser(args.id),
-    },
 });
 
-export default async () => {
+const wrapper = () => {
+    let cache: GraphQLSchema;
+    return async () => {
+        if (!cache) {
+            cache = await getLocalSchema();
+            return cache;
+        } else {
+            try {
+                cache = await getRemoteSchema();
+            } catch (e) {
+                // tslint:disable-next-line:no-console
+                console.error(e);
+            }
+            return cache;
+        }
+    };
+};
+
+const getRemoteSchema = async () => {
     const {host, port, protocol} = getUser();
     const userSchema = await getSchema(`${protocol}://${host}:${port}/graphql`);
     return mergeSchemas({
-        resolvers: remoteResolvers(userSchema),
+        resolvers: [
+            resolvers,
+            remoteResolvers(userSchema),
+        ],
         schemas: [
             userSchema,
-            typeDefs,
+            remoteTypeDefs,
         ],
     });
 };
+
+const getLocalSchema = async () => makeExecutableSchema({ typeDefs, resolvers });
+
+export default wrapper();

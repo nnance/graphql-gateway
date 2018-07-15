@@ -13,13 +13,11 @@ async function StartServer() {
   const {host, port} = getBlog();
   const server = new Hapi.Server({host, port});
 
-  const schema = await remoteSchema();
-
   await server.register({
     options: {
-      graphqlOptions: {
-        schema,
-      },
+      graphqlOptions: async () => ({
+        schema: await remoteSchema(),
+      }),
       path: "/graphql",
       route: {
         cors: true,
