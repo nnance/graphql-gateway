@@ -62,7 +62,7 @@ const remoteResolvers = (subschema: GraphQLSchema) => ({
 
 const wrapper = () => {
     let cache: GraphQLSchema;
-    return async () => {
+    const getSchemaWithCache = async () => {
         if (!cache) {
             cache = await getLocalSchema();
             return cache;
@@ -76,6 +76,7 @@ const wrapper = () => {
             return cache;
         }
     };
+    return getSchemaWithCache;
 };
 
 const getRemoteSchema = async () => {

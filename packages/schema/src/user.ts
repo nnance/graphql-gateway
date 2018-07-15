@@ -1,13 +1,11 @@
-import { gql } from "apollo-server";
-
-export const user = gql`
+export const user = `
 type User {
     _id: ID!
     username: String
 }
 `;
 
-export const userWithBlogs = gql`
+export const userWithBlogs = `
 type User {
     _id: ID!
     username: String
@@ -15,7 +13,7 @@ type User {
 }
 `;
 
-export const userQuery = gql`
+export const userQuery = `
     type Query {
         users: [User]
         userById(id: ID!): User
