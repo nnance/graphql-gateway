@@ -1,51 +1,40 @@
 import {
-    graphiqlHapi,
-    graphqlHapi,
-} from "apollo-server-hapi";
+  getBlog,
+  getGateway,
+  getSchema,
+  getUser,
+  startServer,
+  wrapper,
+} from "core";
 
-import Hapi from "hapi";
+import {
+  makeExecutableSchema,
+  mergeSchemas,
+} from "graphql-tools";
 
-import remoteSchema from "./impl";
-
-import { getGateway } from "core";
-
-async function StartServer() {
-
-  const server = new Hapi.Server(getGateway());
-
-  const schema = await remoteSchema();
-
-  await server.register({
-    options: {
-      graphqlOptions: {
-        schema,
-      },
-      path: "/graphql",
-      route: {
-        cors: true,
-      },
-    },
-    plugin: graphqlHapi,
+const getRemoteSchema = async () => {
+  const blog = getBlog();
+  const user = getUser();
+  return mergeSchemas({
+      schemas: [
+          await getSchema(`${blog.protocol}://${blog.host}:${blog.port}/graphql`),
+          await getSchema(`${user.protocol}://${user.host}:${user.port}/graphql`),
+      ],
   });
+};
 
-  await server.register({
-    options: {
-        graphiqlOptions: {
-            endpointURL: "/graphql",
-        },
-        path: "/",
-    },
-    plugin: graphiqlHapi,
-  });
-
-  try {
-    await server.start();
-  } catch (err) {
-    // tslint:disable-next-line:no-console
-    console.log(`Error while starting server: ${err.message}`);
-  }
-  // tslint:disable-next-line:no-console
-  console.log(`Server running at: ${server.info.uri}`);
+const typeDefs = `
+type Query {
+  serverTime: String
 }
+`;
 
-StartServer();
+const resolvers = {
+  Query: {
+      serverTime: () => (new Date()).toLocaleString(),
+  },
+};
+
+const getLocalSchema = async () => makeExecutableSchema({ typeDefs, resolvers: {} });
+
+startServer(getGateway(), wrapper(getLocalSchema, getRemoteSchema));
