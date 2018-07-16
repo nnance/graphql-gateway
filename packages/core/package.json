@@ -12,7 +12,9 @@
   "license": "ISC",
   "dependencies": {
     "apollo-link-http": "^1.5.4",
+    "apollo-server-hapi": "^1.4.0",
     "graphql-tools": "^3.0.5",
+    "hapi": "^17.5.2",
     "node-fetch": "^2.1.2"
   },
   "peerDependencies": {

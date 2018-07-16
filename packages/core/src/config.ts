@@ -1,3 +1,9 @@
+export interface IServerSettings {
+    host: string;
+    port: string;
+    protocol: string;
+}
+
 export const getGateway = () => ({
     host: "localhost",
     port: "3000",

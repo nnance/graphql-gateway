@@ -1,49 +1,72 @@
 import {
-    graphiqlHapi,
-    graphqlHapi,
-} from "apollo-server-hapi";
+  getBlog,
+  getSchema,
+  getUser,
+  startServer,
+  wrapper,
+} from "core";
 
-import Hapi from "hapi";
+import {
+  makeExecutableSchema,
+  mergeSchemas,
+} from "graphql-tools";
 
-import remoteSchema from "./impl";
+import { GraphQLSchema } from "graphql";
 
-import { getUser } from "core";
+import {
+  user,
+  userQuery,
+  userWithBlogs,
+} from "schema";
 
-async function StartServer() {
-  const {host, port} = getUser();
-  const server = new Hapi.Server({host, port});
+import {
+  allUsers,
+  userById,
+} from "./impl";
 
-  await server.register({
-    options: {
-      graphqlOptions: async () => ({
-        schema: await remoteSchema(),
-      }),
-      path: "/graphql",
-      route: {
-        cors: true,
+const resolvers = {
+  Query: {
+      userById: (obj: any, args: any, context: any) => userById(args.id),
+      users: allUsers,
+  },
+};
+
+const remoteResolvers = (schema: GraphQLSchema) => ({
+  User: {
+      blogs: {
+          fragment: "fragment UserFragment on User { _id }",
+          resolve(parent: any, args: any, context: any, info: any) {
+              return info.mergeInfo.delegateToSchema({
+                  args: {
+                      id: parent._id,
+                  },
+                  context,
+                  fieldName: "blogsForUser",
+                  info,
+                  operation: "query",
+                  schema,
+              });
+          },
       },
-    },
-    plugin: graphqlHapi,
+  },
+});
+
+const getRemoteSchema = async () => {
+  const {host, port, protocol} = getBlog();
+  const blogSchema = await getSchema(`${protocol}://${host}:${port}/graphql`);
+  return mergeSchemas({
+      resolvers: [
+          resolvers,
+          remoteResolvers(blogSchema),
+      ],
+      schemas: [
+          blogSchema,
+          userWithBlogs,
+          userQuery,
+      ],
   });
+};
 
-  await server.register({
-    options: {
-        graphiqlOptions: {
-            endpointURL: "/graphql",
-        },
-        path: "/",
-    },
-    plugin: graphiqlHapi,
-  });
+const getLocalSchema = async () => makeExecutableSchema({ typeDefs: [user, userQuery], resolvers });
 
-  try {
-    await server.start();
-  } catch (err) {
-    // tslint:disable-next-line:no-console
-    console.log(`Error while starting server: ${err.message}`);
-  }
-  // tslint:disable-next-line:no-console
-  console.log(`Server running at: ${server.info.uri}`);
-}
-
-StartServer();
+startServer(getUser(), wrapper(getLocalSchema, getRemoteSchema));
