@@ -15,8 +15,8 @@ import {
   getBlog as getBlogServer,
   getSchema,
   getUser,
+  schemaCacher,
   startServer,
-  wrapper,
 } from "core";
 
 import {
@@ -71,4 +71,4 @@ const getRemoteSchema = async () => {
   });
 };
 
-startServer(getBlogServer(), wrapper(getLocalSchema, getRemoteSchema));
+startServer(getBlogServer(), schemaCacher(getLocalSchema, getRemoteSchema));

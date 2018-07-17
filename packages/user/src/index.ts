@@ -2,8 +2,8 @@ import {
   getBlog,
   getSchema,
   getUser,
+  schemaCacher,
   startServer,
-  wrapper,
 } from "core";
 
 import {
@@ -69,4 +69,4 @@ const getRemoteSchema = async () => {
 
 const getLocalSchema = async () => makeExecutableSchema({ typeDefs: [user, userQuery], resolvers });
 
-startServer(getUser(), wrapper(getLocalSchema, getRemoteSchema));
+startServer(getUser(), schemaCacher(getLocalSchema, getRemoteSchema));

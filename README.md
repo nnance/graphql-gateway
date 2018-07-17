@@ -65,7 +65,7 @@ Confirm the services are working by opening the GraphiQL interface on the gatewa
 > open http://localhost:3000
 ```
 
-**Note**: Make sure you refresh the GrpahiQL interface at least once to trigger all the services to refresh their dependent schemas.
+**Note**: Make sure you refresh the GrpahiQL interface at least once to trigger all the services to refresh their dependent schemas.  After the initial refresh it could take a few seconds for the schema to become consistent.
 
 Once GraphiQL is running the following query should work
 
@@ -82,10 +82,10 @@ Once GraphiQL is running the following query should work
 
 ## Future improvements
 
-1. Merge remote schemas with local schemas to avoid duplication.
+- [ ] Merge remote schemas with local schemas to avoid duplication.
 
-1. Build schema refresh logic in schema loader such that schemas can be refreshed at a specified interval.
+- [x] Build schema refresh logic in schema loader such that schemas can be refreshed at a specified interval.
 
-1. Use a service discover tool like Consul to register each service and have the gateway user it.
+- [ ] Use a service discover tool like Consul to register each service and have the gateway user it.
 
-1. Dockerize each service and provide a Kubernetes deployable example with infrastructure.  ie: Consule.
+- [ ] Dockerize each service and provide a Kubernetes deployable example with infrastructure.  ie: Consule.

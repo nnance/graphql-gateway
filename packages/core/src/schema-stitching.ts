@@ -11,26 +11,23 @@ import {
 
 export type SchemaGetter = () => Promise<GraphQLSchema>;
 
-export function wrapper(localGetter: SchemaGetter, remoteGetter: SchemaGetter) {
+export function schemaCacher(localGetter: SchemaGetter, remoteGetter: SchemaGetter) {
     let cache: GraphQLSchema;
-    let remoteCache: GraphQLSchema;
 
-    const getSchemaWithCache = async () => {
-        if (!cache) {
-            cache = await localGetter();
-            return cache;
-        } else if (!remoteCache) {
-            try {
-                remoteCache = await remoteGetter();
-            } catch (e) {
-                // tslint:disable-next-line:no-console
-                console.error(e);
-                return cache;
-            }
-        }
-        return remoteCache;
-    };
-    return getSchemaWithCache;
+    function callRemote(delay: number) {
+        setTimeout(() => {
+            remoteGetter()
+                .then((resp) => {
+                    cache = resp;
+                    callRemote(60000);  // refresh remote cache every minute
+                })
+                .catch(() => callRemote(delay * 2)); // retry backoff
+        }, delay);
+    }
+
+    callRemote(1000);  // load remote schema in the background
+
+    return async () => cache || await localGetter();
 }
 
 export async function getSchema(uri: string) {

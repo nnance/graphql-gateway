@@ -3,8 +3,8 @@ import {
   getGateway,
   getSchema,
   getUser,
+  schemaCacher,
   startServer,
-  wrapper,
 } from "core";
 
 import {
@@ -15,6 +15,7 @@ import {
 const getRemoteSchema = async () => {
   const blog = getBlog();
   const user = getUser();
+
   return mergeSchemas({
       schemas: [
           await getSchema(`${blog.protocol}://${blog.host}:${blog.port}/graphql`),
@@ -35,6 +36,6 @@ const resolvers = {
   },
 };
 
-const getLocalSchema = async () => makeExecutableSchema({ typeDefs, resolvers: {} });
+const getLocalSchema = async () => makeExecutableSchema({ typeDefs, resolvers });
 
-startServer(getGateway(), wrapper(getLocalSchema, getRemoteSchema));
+startServer(getGateway(), schemaCacher(getLocalSchema, getRemoteSchema));
