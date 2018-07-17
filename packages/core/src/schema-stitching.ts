@@ -18,6 +18,10 @@ export function schemaCacher(localGetter: SchemaGetter, remoteGetter: SchemaGett
         setTimeout(() => {
             remoteGetter()
                 .then((resp) => {
+                    if (!cache) {
+                        // tslint:disable-next-line:no-console
+                        console.log("Successfully pulled remote schema");
+                    }
                     cache = resp;
                     callRemote(60000);  // refresh remote cache every minute
                 })
