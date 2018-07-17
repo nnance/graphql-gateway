@@ -25,6 +25,7 @@ export function wrapper(localGetter: SchemaGetter, remoteGetter: SchemaGetter) {
             } catch (e) {
                 // tslint:disable-next-line:no-console
                 console.error(e);
+                return cache;
             }
         }
         return remoteCache;
