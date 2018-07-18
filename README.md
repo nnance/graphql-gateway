@@ -83,9 +83,7 @@ Once GraphiQL is running the following query should work
 ## Future improvements
 
 - [ ] Merge remote schemas with local schemas to avoid duplication.
-
 - [x] Build schema refresh logic in schema loader such that schemas can be refreshed at a specified interval.
-
 - [ ] Use a service discover tool like Consul to register each service and have the gateway user it.
-
+- [x] Create Docker compose file to make running services easier
 - [ ] Dockerize each service and provide a Kubernetes deployable example with infrastructure.  ie: Consule.

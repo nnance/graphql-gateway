@@ -1,0 +1,42 @@
+version: "3"
+
+services:
+  blog:
+    image: node:8
+    command: node ./app/dist/index.js
+    volumes:
+     - ./packages/blog:/app
+     - ./packages/core:/app/node_modules/core
+     - ./packages/schema:/app/node_modules/schema
+    expose: ["3010"]
+    networks:
+      - back-tier
+
+  user:
+    image: node:8
+    command: node ./app/dist/index.js
+    volumes:
+     - ./packages/user:/app
+     - ./packages/core:/app/node_modules/core
+     - ./packages/schema:/app/node_modules/schema
+    expose: ["3011"]
+    networks:
+      - back-tier
+
+  gateway:
+    image: node:8
+    command: node ./app/dist/index.js
+    volumes:
+     - ./packages/gateway:/app
+     - ./packages/core:/app/node_modules/core
+    depends_on: 
+      - blog
+      - user
+    ports: [
+      "3000:3000"
+    ]
+    networks:
+      - back-tier
+
+networks:
+  back-tier:
