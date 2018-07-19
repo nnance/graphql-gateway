@@ -2,12 +2,9 @@ version: "3"
 
 services:
   blog:
-    image: node:8
+    build: ./packages/blog
+    container_name: blog
     command: node ./app/dist/index.js
-    volumes:
-     - ./packages/blog:/app
-     - ./packages/core:/app/node_modules/core
-     - ./packages/schema:/app/node_modules/schema
     expose: ["3010"]
     networks:
       - back-tier
@@ -15,6 +12,7 @@ services:
   user:
     image: node:8
     command: node ./app/dist/index.js
+    container_name: user
     volumes:
      - ./packages/user:/app
      - ./packages/core:/app/node_modules/core
@@ -24,17 +22,13 @@ services:
       - back-tier
 
   gateway:
-    image: node:8
+    build: ./packages/gateway
+    container_name: gateway
     command: node ./app/dist/index.js
-    volumes:
-     - ./packages/gateway:/app
-     - ./packages/core:/app/node_modules/core
-    depends_on: 
+    depends_on:
       - blog
       - user
-    ports: [
-      "3000:3000"
-    ]
+    ports: ["3000:3000"]
     networks:
       - back-tier
 
