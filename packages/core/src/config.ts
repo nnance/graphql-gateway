@@ -11,13 +11,13 @@ export const getGateway = () => ({
 });
 
 export const getBlog = () => ({
-    host: "localhost",
+    host: "0.0.0.0",
     port: "3010",
     protocol: "http",
 });
 
 export const getUser = () => ({
-    host: "localhost",
+    host: "0.0.0.0",
     port: "3011",
     protocol: "http",
 });

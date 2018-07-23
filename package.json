@@ -1,14 +1,17 @@
 {
 	"scripts": {
 		"postinstall": "lerna bootstrap",
-		"clean": "lerna clean",
+		"bootstrap": "lerna bootstrap",
+		"clean": "lerna clean && rimraf ./packages/*/dist",
 		"compile": "lerna run compile"
 	},
 	"devDependencies": {
 		"@types/graphql": "^0.13.3",
 		"@types/hapi": "^17.0.15",
+		"apollo-server-hapi": "^1.4.0",
 		"graphql": "^0.13.2",
-		"lerna": "^2.11.0"
+		"lerna": "^2.11.0",
+		"rimraf": "^2.6.2"
 	},
 	"dependencies": {}
 }

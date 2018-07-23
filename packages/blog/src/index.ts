@@ -1,4 +1,9 @@
 import {
+    graphiqlHapi,
+    graphqlHapi,
+  } from "apollo-server-hapi";
+
+import {
   makeExecutableSchema,
   mergeSchemas,
 } from "graphql-tools";
@@ -71,4 +76,4 @@ const getRemoteSchema = async () => {
   });
 };
 
-startServer(getBlogServer(), schemaCacher(getLocalSchema, getRemoteSchema));
+startServer(getBlogServer(), schemaCacher(getLocalSchema, getRemoteSchema), graphqlHapi, graphiqlHapi);

@@ -5,9 +5,7 @@ import {
 
 import { createHttpLink } from "apollo-link-http";
 
-import {
-    GraphQLSchema,
-} from "graphql";
+import { GraphQLSchema } from "graphql";
 
 export type SchemaGetter = () => Promise<GraphQLSchema>;
 

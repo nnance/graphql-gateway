@@ -2,29 +2,32 @@ version: "3"
 
 services:
   blog:
-    build: ./packages/blog
+    build: .
     container_name: blog
-    command: node ./app/dist/index.js
     expose: ["3010"]
+    working_dir: /app/packages/blog
+    command: npm start
     networks:
       - back-tier
 
   user:
-    image: node:8
-    command: node ./app/dist/index.js
+    build: .
     container_name: user
-    volumes:
-     - ./packages/user:/app
-     - ./packages/core:/app/node_modules/core
-     - ./packages/schema:/app/node_modules/schema
+    working_dir: /app/packages/user
+    command: npm start
     expose: ["3011"]
     networks:
       - back-tier
 
   gateway:
-    build: ./packages/gateway
+    build: .
     container_name: gateway
-    command: node ./app/dist/index.js
+    working_dir: /app/packages/gateway
+    command: npm start
+    environment:
+      - PORT=3000
+      - BLOGADDR=http://blog:3010
+      - USERADDR=http://user:3011
     depends_on:
       - blog
       - user

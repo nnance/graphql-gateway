@@ -1,25 +1,36 @@
 import {
+  graphiqlHapi,
+  graphqlHapi,
+} from "apollo-server-hapi";
+
+import {
   getBlog,
   getGateway,
   getSchema,
   getUser,
+  IServerSettings,
   schemaCacher,
   startServer,
 } from "core";
+
+// import { startServer } from "./server";
 
 import {
   makeExecutableSchema,
   mergeSchemas,
 } from "graphql-tools";
 
+const buildAddress = (getter: () => IServerSettings) =>
+  `${getter().protocol}://${getter().host}:${getter().port}`;
+
 const getRemoteSchema = async () => {
-  const blog = getBlog();
-  const user = getUser();
+  const blog = process.env.BLOGADDR || buildAddress(getBlog);
+  const user = process.env.USERADDR || buildAddress(getUser);
 
   return mergeSchemas({
       schemas: [
-          await getSchema(`${blog.protocol}://${blog.host}:${blog.port}/graphql`),
-          await getSchema(`${user.protocol}://${user.host}:${user.port}/graphql`),
+          await getSchema(`${blog}/graphql`),
+          await getSchema(`${user}/graphql`),
       ],
   });
 };
@@ -38,4 +49,6 @@ const resolvers = {
 
 const getLocalSchema = async () => makeExecutableSchema({ typeDefs, resolvers });
 
-startServer(getGateway(), schemaCacher(getLocalSchema, getRemoteSchema));
+const cacher = schemaCacher(getLocalSchema, getRemoteSchema);
+
+startServer(getGateway(), cacher, graphqlHapi, graphiqlHapi);
