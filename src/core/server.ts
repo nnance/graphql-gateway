@@ -7,11 +7,11 @@ import Hapi from "hapi";
 
 import { SchemaGetter } from "./schema-stitching";
 
-import { IServerSettings } from "./config";
+import url from "url";
 
-export async function startServer(settings: IServerSettings, schemaGetter: SchemaGetter) {
-    const {host, port} = settings;
-    const server = new Hapi.Server({host, port});
+export async function startServer(settings: url.UrlWithStringQuery, schemaGetter: SchemaGetter) {
+    const {hostname, port} = settings;
+    const server = new Hapi.Server({host: hostname, port});
 
     await server.register({
       options: {

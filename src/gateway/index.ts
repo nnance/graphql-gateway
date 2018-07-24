@@ -5,7 +5,7 @@ import {
   getUser,
   schemaCacher,
   startServer,
-} from "core";
+} from "../core";
 
 import {
   makeExecutableSchema,
@@ -18,8 +18,8 @@ const getRemoteSchema = async () => {
 
   return mergeSchemas({
       schemas: [
-          await getSchema(`${blog.protocol}://${blog.host}:${blog.port}/graphql`),
-          await getSchema(`${user.protocol}://${user.host}:${user.port}/graphql`),
+          await getSchema(`${blog.protocol}//${blog.hostname}:${blog.port}/graphql`),
+          await getSchema(`${user.protocol}//${user.hostname}:${user.port}/graphql`),
       ],
   });
 };

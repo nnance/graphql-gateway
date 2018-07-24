@@ -2,33 +2,45 @@ version: "3"
 
 services:
   blog:
-    build: ./packages/blog
+    image: node:8
+    command: node ./app/dist/blog/index.js
     container_name: blog
-    command: node ./app/dist/index.js
+    volumes:
+      - .:/app
     expose: ["3010"]
+    environment:
+      - NODE_ENV=docker
+      - USERADDR=http://user:3011
     networks:
       - back-tier
 
   user:
     image: node:8
-    command: node ./app/dist/index.js
+    command: node ./app/dist/user/index.js
     container_name: user
     volumes:
-     - ./packages/user:/app
-     - ./packages/core:/app/node_modules/core
-     - ./packages/schema:/app/node_modules/schema
+      - .:/app
     expose: ["3011"]
+    environment:
+      - NODE_ENV=docker
+      - BLOGADDR=http://blog:3010
     networks:
       - back-tier
 
   gateway:
-    build: ./packages/gateway
+    image: node:8
+    command: node ./app/dist/gateway/index.js
     container_name: gateway
-    command: node ./app/dist/index.js
+    volumes:
+      - .:/app
     depends_on:
       - blog
       - user
     ports: ["3000:3000"]
+    environment:
+      - NODE_ENV=docker
+      - USERADDR=http://user:3011
+      - BLOGADDR=http://blog:3010
     networks:
       - back-tier
 

@@ -9,7 +9,7 @@ import {
   blog,
   blogQuery,
   blogWithUser,
-} from "schema";
+} from "../schema";
 
 import {
   getBlog as getBlogServer,
@@ -17,7 +17,7 @@ import {
   getUser,
   schemaCacher,
   startServer,
-} from "core";
+} from "../core";
 
 import {
   getAll,
@@ -56,8 +56,8 @@ const remoteResolvers = (schema: GraphQLSchema) => ({
 });
 
 const getRemoteSchema = async () => {
-  const {host, port, protocol} = getUser();
-  const userSchema = await getSchema(`${protocol}://${host}:${port}/graphql`);
+  const {hostname, port, protocol} = getUser();
+  const userSchema = await getSchema(`${protocol}//${hostname}:${port}/graphql`);
   return mergeSchemas({
       resolvers: [
           resolvers,

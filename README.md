@@ -21,7 +21,7 @@ type User {
 
 ## Project Structure
 
-This is a [lerna](https://github.com/lerna/lerna) project composed of several packages:
+This project composed of several services and shared libraries:
 
 * core - Core libraries used by all service packages that provides capabilities like: startServer, getSchema, etc.
 
@@ -56,8 +56,20 @@ All three services must be running before the system will work.  The order of st
 Open a separate tab for each service and start them with
 
 ```sh
-> node ./dist/index.js
+> node ./dist/user/index.js
+> node ./dist/blog/index.js
+> node ./dist/gateway/index.js
 ```
+
+## Docker Compose
+
+Start them with docker compose
+
+```sh
+> docker-compose up --build
+```
+
+## Verifying services
 
 Confirm the services are working by opening the GraphiQL interface on the gateway
 
@@ -84,6 +96,6 @@ Once GraphiQL is running the following query should work
 
 - [ ] Merge remote schemas with local schemas to avoid duplication.
 - [x] Build schema refresh logic in schema loader such that schemas can be refreshed at a specified interval.
-- [ ] Use a service discover tool like Consul to register each service and have the gateway user it.
+- [ ] Use a service discover tool like Consul to register each service and have the gateway use it.
 - [x] Create Docker compose file to make running services easier
-- [ ] Dockerize each service and provide a Kubernetes deployable example with infrastructure.  ie: Consule.
+- [ ] Dockerize each service and provide a Kubernetes deployable example with infrastructure.  ie: Consule & Envoy.
