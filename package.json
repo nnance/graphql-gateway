@@ -7,6 +7,9 @@
     "start": "node ./dist/gateway/index.js",
     "start:blog": "node ./dist/blog/index.js",
     "start:user": "node ./dist/user/index.js",
+    "watch:gateway": "nodemon ./dist/gateway/index.js",
+    "watch:blog": "nodemon ./dist/blog/index.js",
+    "watch:user": "nodemon ./dist/user/index.js",
     "compile": "tsc",
     "lint": "tslint ./src",
     "test": "echo \"Error: no test specified\" && exit 1"
@@ -26,6 +29,7 @@
   "homepage": "https://github.com/nnance/graphql-gateway#readme",
   "devDependencies": {
     "@types/hapi": "^17.0.15",
+    "nodemon": "^1.18.3",
     "tslint": "^5.11.0",
     "typescript": "^2.9.2"
   },

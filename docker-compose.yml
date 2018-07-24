@@ -3,7 +3,8 @@ version: "3"
 services:
   blog:
     image: node:8
-    command: node ./app/dist/blog/index.js
+    working_dir: /app
+    command: npm run watch:blog
     container_name: blog
     volumes:
       - .:/app
@@ -16,7 +17,8 @@ services:
 
   user:
     image: node:8
-    command: node ./app/dist/user/index.js
+    working_dir: /app
+    command: npm run watch:user
     container_name: user
     volumes:
       - .:/app
@@ -29,7 +31,8 @@ services:
 
   gateway:
     image: node:8
-    command: node ./app/dist/gateway/index.js
+    working_dir: /app
+    command: npm run watch:gateway
     container_name: gateway
     volumes:
       - .:/app
