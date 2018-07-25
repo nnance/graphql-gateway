@@ -3,19 +3,15 @@ type User {
     _id: ID!
     username: String
 }
-`;
 
-export const userWithBlogs = `
-type User {
-    _id: ID!
-    username: String
-    blogs: [Blog]
+type Query {
+    users: [User]
+    userById(id: ID!): User
 }
 `;
 
-export const userQuery = `
-    type Query {
-        users: [User]
-        userById(id: ID!): User
-    }
+export const userLinks = `
+extend type User {
+    blogs: [Blog]
+}
 `;

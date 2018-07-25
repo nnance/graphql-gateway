@@ -1,6 +1,7 @@
 import {
     introspectSchema,
     makeRemoteExecutableSchema,
+    mergeSchemas,
 } from "graphql-tools";
 
 import { createHttpLink } from "apollo-link-http";
@@ -15,17 +16,20 @@ export function schemaCacher(localGetter: SchemaGetter, remoteGetter: SchemaGett
     let cache: GraphQLSchema;
 
     function callRemote(delay: number) {
-        setTimeout(() => {
-            remoteGetter()
-                .then((resp) => {
-                    if (!cache) {
-                        // tslint:disable-next-line:no-console
-                        console.log("Successfully pulled remote schema");
-                    }
-                    cache = resp;
-                    callRemote(60000);  // refresh remote cache every minute
-                })
-                .catch(() => callRemote(delay * 2)); // retry backoff
+        setTimeout(async () => {
+            try {
+                const resp = await remoteGetter();
+                if (!cache) {
+                    // tslint:disable-next-line:no-console
+                    console.log("Successfully pulled remote schema");
+                }
+                cache = resp;
+                callRemote(60000);  // refresh remote cache every minute
+            } catch (e) {
+                // tslint:disable-next-line:no-console
+                console.error(e);
+                callRemote(delay * 2); // retry backoff
+            }
         }, delay);
     }
 

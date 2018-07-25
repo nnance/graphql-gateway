@@ -6,9 +6,8 @@ import {
 import { GraphQLSchema } from "graphql";
 
 import {
-  blog,
-  blogQuery,
-  blogWithUser,
+  blog as typeDefs,
+  blogLinks,
 } from "../schema";
 
 import {
@@ -33,9 +32,9 @@ const resolvers = {
   },
 };
 
-const getLocalSchema = async () => makeExecutableSchema({ typeDefs: [blog, blogQuery], resolvers });
+const getLocalSchema = async () => makeExecutableSchema({ typeDefs, resolvers });
 
-const remoteResolvers = (schema: GraphQLSchema) => ({
+const linkResolvers = (schema: GraphQLSchema) => ({
   Blog: {
       user: {
           fragment: "fragment BlogFragment on Blog { _id }",
@@ -61,12 +60,12 @@ const getRemoteSchema = async () => {
   return mergeSchemas({
       resolvers: [
           resolvers,
-          remoteResolvers(userSchema),
+          linkResolvers(userSchema),
       ],
       schemas: [
+          typeDefs,
+          blogLinks,
           userSchema,
-          blogWithUser,
-          blogQuery,
       ],
   });
 };

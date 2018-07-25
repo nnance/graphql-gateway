@@ -4,21 +4,16 @@ type Blog {
     title: String!
     text: String
 }
-`;
 
-export const blogWithUser = `
-type Blog {
-    _id: ID!
-    title: String!
-    text: String
-    user: User
-}
-`;
-
-export const blogQuery = `
 type Query {
     blogs: [Blog]
     blogById(id: ID!): Blog
     blogsForUser(id: ID!): [Blog]
+}
+`;
+
+export const blogLinks = `
+extend type Blog {
+    user: User
 }
 `;
