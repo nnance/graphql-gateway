@@ -69,12 +69,31 @@ Start them with docker compose
 > docker-compose up --build
 ```
 
+## Kubernetes
+
+Deploy the services in Kubernetes.  This has been tested with Docker Community Edition
+
+```sh
+> docker build
+> kubectl create -f ./kubernetes/blog-app.yaml
+> kubectl create -f ./kubernetes/user-app.yaml
+> kubectl create -f ./kubernetes/gateway-app.yaml
+```
+
 ## Verifying services
 
 Confirm the services are working by opening the GraphiQL interface on the gateway
 
+### When running locally or with docker-compose
+
 ```sh
 > open http://localhost:3000
+```
+
+### When deployed on Kubernetes
+
+```sh
+> open http://localhost:30100
 ```
 
 **Note**: Make sure you refresh the GrpahiQL interface at least once to trigger all the services to refresh their dependent schemas.  After the initial refresh it could take a few seconds for the schema to become consistent.

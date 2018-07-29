@@ -1,32 +1,33 @@
 import {
-  getBlog,
-  getSchema,
-  getUser,
-  schemaCacher,
-  startServer,
+    getBlog,
+    getHost,
+    getSchema,
+    schemaCacher,
+    startServer,
+    userPort,
 } from "../core";
 
 import {
-  makeExecutableSchema,
-  mergeSchemas,
+    makeExecutableSchema,
+    mergeSchemas,
 } from "graphql-tools";
 
 import { GraphQLSchema } from "graphql";
 
 import {
-  user as typeDefs,
-  userLinks,
+    user as typeDefs,
+    userLinks,
 } from "../schema";
 
 import {
-  allUsers,
-  userById,
+    allUsers,
+    userById,
 } from "./impl";
 
 const resolvers = {
   Query: {
-      userById: (obj: any, args: any, context: any) => userById(args.id),
-      users: allUsers,
+    userById: (obj: any, args: any, context: any) => userById(args.id),
+    users: allUsers,
   },
 };
 
@@ -36,14 +37,14 @@ const linkResolvers = (schema: GraphQLSchema) => ({
           fragment: "fragment UserFragment on User { _id }",
           resolve(parent: any, args: any, context: any, info: any) {
               return info.mergeInfo.delegateToSchema({
-                  args: {
-                      id: parent._id,
-                  },
-                  context,
-                  fieldName: "blogsForUser",
-                  info,
-                  operation: "query",
-                  schema,
+                args: {
+                    id: parent._id,
+                },
+                context,
+                fieldName: "blogsForUser",
+                info,
+                operation: "query",
+                schema,
               });
           },
       },
@@ -54,18 +55,18 @@ const getRemoteSchema = async () => {
   const {hostname, port, protocol} = getBlog();
   const blogSchema = await getSchema(`${protocol}//${hostname}:${port}/graphql`);
   return mergeSchemas({
-      resolvers: [
-          resolvers,
-          linkResolvers(blogSchema),
-      ],
-      schemas: [
-          typeDefs,
-          userLinks,
-          blogSchema,
-      ],
+    resolvers: [
+    resolvers,
+        linkResolvers(blogSchema),
+    ],
+    schemas: [
+        typeDefs,
+        userLinks,
+        blogSchema,
+    ],
   });
 };
 
 const getLocalSchema = async () => makeExecutableSchema({ typeDefs, resolvers });
 
-startServer(getUser(), schemaCacher(getLocalSchema, getRemoteSchema));
+startServer(getHost(userPort), schemaCacher(getLocalSchema, getRemoteSchema));

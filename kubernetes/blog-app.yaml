@@ -1,0 +1,36 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: blog
+  labels:
+    run: blog
+spec:
+  ports:
+  - port: 3010
+  selector:
+    run: blog
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: blog
+spec:
+  selector:
+    matchLabels:
+      run: blog
+  replicas: 2
+  template:
+    metadata:
+      labels:
+        run: blog
+    spec:
+      containers:
+      - name: blog
+        image: graphql-gateway:v0.1.1
+        imagePullPolicy: Never
+        ports:
+        - containerPort: 3010
+        env:
+        - name: NODE_ENV
+          value: "kubernetes"
+        command: ["node", "./blog/index.js"]

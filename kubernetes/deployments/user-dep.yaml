@@ -1,0 +1,24 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: user
+spec:
+  selector:
+    matchLabels:
+      run: user
+  replicas: 2
+  template:
+    metadata:
+      labels:
+        run: user
+    spec:
+      containers:
+      - name: user
+        image: graphql-gateway:v0.1.1
+        imagePullPolicy: Never
+        ports:
+        - containerPort: 3011
+        env:
+        - name: NODE_ENV
+          value: "kubernetes"
+        command: ["node", "./user/index.js"]
