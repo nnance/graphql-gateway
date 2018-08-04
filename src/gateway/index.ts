@@ -38,4 +38,4 @@ const resolvers = {
 
 const getLocalSchema = async () => makeExecutableSchema({ typeDefs, resolvers });
 
-startServer(getGateway(), schemaCacher(getLocalSchema, getRemoteSchema));
+startServer("gateway", getGateway(), schemaCacher(getLocalSchema, getRemoteSchema));

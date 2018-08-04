@@ -9,10 +9,21 @@ import { SchemaGetter } from "./schema-stitching";
 
 import url from "url";
 
-export async function startServer(settings: url.UrlWithStringQuery, schemaGetter: SchemaGetter) {
+import {
+    ConsoleRecorder,
+    ExplicitContext,
+    Tracer,
+} from "zipkin";
+
+import { zipkinMiddleware } from "./zipkin";
+
+export async function startServer(serviceName: string, settings: url.UrlWithStringQuery, schemaGetter: SchemaGetter) {
     const {hostname, port} = settings;
     const server = new Hapi.Server({host: hostname, port});
 
+    /**
+     * graphql
+     */
     await server.register({
       options: {
         graphqlOptions: async () => ({
@@ -34,6 +45,22 @@ export async function startServer(settings: url.UrlWithStringQuery, schemaGetter
           path: "/",
       },
       plugin: graphiqlHapi,
+    });
+
+    /**
+     * zipkin
+     */
+    const ctxImpl = new ExplicitContext();
+    const recorder = new ConsoleRecorder();
+
+    const tracer = new Tracer({ctxImpl, recorder, localServiceName: serviceName});
+
+    await server.register({
+      options: {
+        port: parseInt(port || "0", 10),
+        tracer,
+      },
+      plugin: zipkinMiddleware,
     });
 
     try {

@@ -71,4 +71,4 @@ const getRemoteSchema = async () => {
   });
 };
 
-startServer(getHost(blogPort), schemaCacher(getLocalSchema, getRemoteSchema));
+startServer("blog", getHost(blogPort), schemaCacher(getLocalSchema, getRemoteSchema));

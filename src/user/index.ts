@@ -69,4 +69,4 @@ const getRemoteSchema = async () => {
 
 const getLocalSchema = async () => makeExecutableSchema({ typeDefs, resolvers });
 
-startServer(getHost(userPort), schemaCacher(getLocalSchema, getRemoteSchema));
+startServer("user", getHost(userPort), schemaCacher(getLocalSchema, getRemoteSchema));
