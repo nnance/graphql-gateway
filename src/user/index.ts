@@ -2,9 +2,11 @@ import {
     getBlog,
     getHost,
     getSchema,
+    getTracer,
     schemaCacher,
     startServer,
     userPort,
+    zipkinFetcher,
 } from "../core";
 
 import {
@@ -23,6 +25,8 @@ import {
     allUsers,
     userById,
 } from "./impl";
+
+const serviceName = "user";
 
 const resolvers = {
   Query: {
@@ -51,9 +55,12 @@ const linkResolvers = (schema: GraphQLSchema) => ({
   },
 });
 
+const tracer = getTracer(serviceName);
+
 const getRemoteSchema = async () => {
   const {hostname, port, protocol} = getBlog();
-  const blogSchema = await getSchema(`${protocol}//${hostname}:${port}/graphql`);
+
+  const blogSchema = await getSchema(tracer, "blog", `${protocol}//${hostname}:${port}/graphql`);
   return mergeSchemas({
     resolvers: [
     resolvers,
@@ -69,4 +76,6 @@ const getRemoteSchema = async () => {
 
 const getLocalSchema = async () => makeExecutableSchema({ typeDefs, resolvers });
 
-startServer("user", getHost(userPort), schemaCacher(getLocalSchema, getRemoteSchema));
+const host = getHost(userPort);
+const schemaFetcher = schemaCacher(getLocalSchema, getRemoteSchema);
+startServer(tracer(), host, schemaFetcher);

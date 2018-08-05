@@ -12,6 +12,8 @@ import {
     Server,
 } from "hapi";
 
+import { Fetcher } from "./schema-stitching";
+
 const headerOption = (headers: any) => (header: any) => {
     const val = headers[header.toLowerCase()];
     if (val != null) {
@@ -36,13 +38,12 @@ export const zipkinMiddleware = {
         server.ext("onRequest", (request: Request, reply: ResponseToolkit) => {
             const {headers} = request;
             const readHeader = headerOption(headers);
-            const plugins = request.plugins;
 
             tracer.scoped(() => {
                 const id =
                     instrumentation.recordRequest(request.method, url.format(request.url), readHeader);
 
-                (plugins as any).zipkin = {
+                (request.plugins as any).zipkin = {
                     traceId: id,
                 };
             });
@@ -60,3 +61,6 @@ export const zipkinMiddleware = {
         });
     },
 };
+
+export const zipkinFetcher = (options: {tracer: Tracer, remoteServiceName: string}): Fetcher =>
+    require("zipkin-instrumentation-fetch")(require("node-fetch"), options);
