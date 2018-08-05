@@ -8,12 +8,12 @@ services:
     container_name: blog
     volumes:
       - .:/app
+    depends_on:
+      - zipkin
     expose: ["3010"]
     environment:
       - NODE_ENV=docker
       - USERADDR=http://user:3011
-    networks:
-      - back-tier
 
   user:
     image: node:8
@@ -22,12 +22,12 @@ services:
     container_name: user
     volumes:
       - .:/app
+    depends_on:
+      - zipkin
     expose: ["3011"]
     environment:
       - NODE_ENV=docker
       - BLOGADDR=http://blog:3010
-    networks:
-      - back-tier
 
   gateway:
     image: node:8
@@ -37,15 +37,30 @@ services:
     volumes:
       - .:/app
     depends_on:
+      - zipkin
       - blog
       - user
-    ports: ["3000:3000"]
+    ports:
+      - "3000:3000"
     environment:
       - NODE_ENV=docker
       - USERADDR=http://user:3011
       - BLOGADDR=http://blog:3010
-    networks:
-      - back-tier
 
-networks:
-  back-tier:
+  # The zipkin process services the UI, and also exposes a POST endpoint that
+  # instrumentation can send trace data to. Scribe is enabled by default.
+  zipkin:
+    image: openzipkin/zipkin
+    container_name: zipkin
+    # Environment settings are defined here https://github.com/openzipkin/zipkin/tree/1.19.0/zipkin-server#environment-variables
+    environment:
+      - STORAGE_TYPE=mem
+      # Uncomment to disable scribe
+      # - SCRIBE_ENABLED=false
+      # Uncomment to enable self-tracing
+      # - SELF_TRACING_ENABLED=true
+      # Uncomment to enable debug logging
+      # - JAVA_OPTS=-Dlogging.level.zipkin=DEBUG
+    ports:
+      # Port used for the Zipkin UI and HTTP Api
+      - 9411:9411
