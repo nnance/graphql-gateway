@@ -1,67 +1,21 @@
-import {
-    graphiqlHapi,
-    graphqlHapi,
-} from "apollo-server-hapi";
-
 import Hapi from "hapi";
 
 import { SchemaGetter } from "./schema-stitching";
 
 import url from "url";
 
-import {
-    ConsoleRecorder,
-    ExplicitContext,
-    Tracer,
-} from "zipkin";
+import { graphiql, graphql } from "./plugins/graphql";
+import { Tracer, zipkin } from "./plugins/zipkin";
 
-import { zipkinMiddleware } from "./zipkin";
-
-export async function startServer(serviceName: string, settings: url.UrlWithStringQuery, schemaGetter: SchemaGetter) {
+export async function startServer(tracer: Tracer, settings: url.UrlWithStringQuery, schemaGetter: SchemaGetter) {
     const {hostname, port} = settings;
     const server = new Hapi.Server({host: hostname, port});
 
-    /**
-     * graphql
-     */
-    await server.register({
-      options: {
-        graphqlOptions: async () => ({
-          schema: await schemaGetter(),
-        }),
-        path: "/graphql",
-        route: {
-          cors: true,
-        },
-      },
-      plugin: graphqlHapi,
-    });
-
-    await server.register({
-      options: {
-          graphiqlOptions: {
-              endpointURL: "/graphql",
-          },
-          path: "/",
-      },
-      plugin: graphiqlHapi,
-    });
-
-    /**
-     * zipkin
-     */
-    const ctxImpl = new ExplicitContext();
-    const recorder = new ConsoleRecorder();
-
-    const tracer = new Tracer({ctxImpl, recorder, localServiceName: serviceName});
-
-    await server.register({
-      options: {
-        port: parseInt(port || "0", 10),
-        tracer,
-      },
-      plugin: zipkinMiddleware,
-    });
+    await server.register([
+      graphiql(),
+      graphql(schemaGetter),
+      zipkin(tracer, port),
+    ]);
 
     try {
       await server.start();
