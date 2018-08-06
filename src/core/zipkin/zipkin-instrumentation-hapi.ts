@@ -12,7 +12,7 @@ import {
     Server,
 } from "hapi";
 
-import { Fetcher } from "./schema-stitching";
+import { Fetcher } from "../schema-stitching";
 
 const headerOption = (headers: any) => (header: any) => {
     const val = headers[header.toLowerCase()];
@@ -61,6 +61,3 @@ export const zipkinMiddleware = {
         });
     },
 };
-
-export const zipkinFetcher = (options: {tracer: Tracer, remoteServiceName: string}): Fetcher =>
-    require("zipkin-instrumentation-fetch")(require("node-fetch"), options);

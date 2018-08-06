@@ -6,7 +6,7 @@ import {
     schemaCacher,
     startServer,
     userPort,
-    zipkinFetcher,
+    zipkinLink,
 } from "../core";
 
 import {
@@ -60,7 +60,7 @@ const tracer = getTracer(serviceName);
 const getRemoteSchema = async () => {
   const {hostname, port, protocol} = getBlog();
 
-  const blogSchema = await getSchema(tracer, "blog", `${protocol}//${hostname}:${port}/graphql`);
+  const blogSchema = await getSchema(zipkinLink(tracer, "blog", `${protocol}//${hostname}:${port}/graphql`));
   return mergeSchemas({
     resolvers: [
     resolvers,
