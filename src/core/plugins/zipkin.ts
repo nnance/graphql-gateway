@@ -8,7 +8,7 @@ import {
 
 import { HttpLogger } from "zipkin-transport-http";
 
-import { zipkinMiddleware } from "./zipkin-instrumentation-hapi";
+import { zipkinMiddleware } from "../zipkin/zipkin-instrumentation-hapi";
 
 export { Tracer } from "zipkin";
 
