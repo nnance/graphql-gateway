@@ -66,20 +66,20 @@ services:
       - 9411:9411
   # Prometheus time series DB for metrics
   prometheus:
-      image: prom/prometheus:latest
-      volumes:
-          - ./prometheus.yml:/etc/prometheus/prometheus.yml
-      command:
-          - "--config.file=/etc/prometheus/prometheus.yml"
-      ports:
-          - "9090:9090"
+    image: prom/prometheus:latest
+    volumes:
+        - ./prometheus.yml:/etc/prometheus/prometheus.yml
+    command:
+        - "--config.file=/etc/prometheus/prometheus.yml"
+    ports:
+        - "9090:9090"
   node-exporter:
-      image: prom/node-exporter:latest
-      ports:
-          - "9100:9100"
+    image: prom/node-exporter:latest
+    ports:
+        - "9100:9100"
   grafana:
-      image: grafana/grafana
-      ports:
-          - "8080:3000"
-      depends_on:
-          - prometheus
+    image: grafana/grafana
+    ports:
+        - "8080:3000"
+    depends_on:
+        - prometheus
