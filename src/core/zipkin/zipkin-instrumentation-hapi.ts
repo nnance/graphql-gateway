@@ -12,8 +12,6 @@ import {
     Server,
 } from "hapi";
 
-import { Fetcher } from "../schema-stitching";
-
 const headerOption = (headers: any) => (header: any) => {
     const val = headers[header.toLowerCase()];
     if (val != null) {

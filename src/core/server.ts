@@ -4,8 +4,7 @@ import { SchemaGetter } from "./schema-stitching";
 
 import url from "url";
 
-import { graphiql, graphql } from "./plugins/graphql";
-import { Tracer, zipkin } from "./zipkin/plugin";
+import { graphiql, graphql, Tracer, zipkin  } from "./plugins";
 
 export async function startServer(tracer: Tracer, settings: url.UrlWithStringQuery, schemaGetter: SchemaGetter) {
     const {hostname, port} = settings;
