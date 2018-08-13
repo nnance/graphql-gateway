@@ -1,14 +1,15 @@
 import {
     introspectSchema,
     makeRemoteExecutableSchema,
-    mergeSchemas,
 } from "graphql-tools";
 
-import { createHttpLink } from "apollo-link-http";
+import { ApolloLink } from "apollo-link";
 
 import {
     GraphQLSchema,
 } from "graphql";
+
+export type Fetcher = (url: string, options: any) => Promise<Response>;
 
 export type SchemaGetter = () => Promise<GraphQLSchema>;
 
@@ -38,8 +39,7 @@ export function schemaCacher(localGetter: SchemaGetter, remoteGetter: SchemaGett
     return async () => cache || await localGetter();
 }
 
-export async function getSchema(uri: string) {
-    const link = createHttpLink({ uri, fetch: require("node-fetch") });
+export async function getSchema(link: ApolloLink) {
     const schema = await introspectSchema(link);
     return makeRemoteExecutableSchema({ link, schema });
 }

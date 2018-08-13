@@ -2,9 +2,11 @@ import {
   getBlog,
   getGateway,
   getSchema,
+  getTracer,
   getUser,
   schemaCacher,
   startServer,
+  zipkinLink,
 } from "../core";
 
 import {
@@ -12,14 +14,18 @@ import {
   mergeSchemas,
 } from "graphql-tools";
 
+const serviceName = "gateway";
+
+const tracer = getTracer(serviceName);
+
 const getRemoteSchema = async () => {
   const blog = getBlog();
   const user = getUser();
 
   return mergeSchemas({
       schemas: [
-          await getSchema(`${blog.protocol}//${blog.hostname}:${blog.port}/graphql`),
-          await getSchema(`${user.protocol}//${user.hostname}:${user.port}/graphql`),
+          await getSchema(zipkinLink(tracer, "blog", `${blog.protocol}//${blog.hostname}:${blog.port}/graphql`)),
+          await getSchema(zipkinLink(tracer, "user", `${user.protocol}//${user.hostname}:${user.port}/graphql`)),
       ],
   });
 };
@@ -38,4 +44,6 @@ const resolvers = {
 
 const getLocalSchema = async () => makeExecutableSchema({ typeDefs, resolvers });
 
-startServer(getGateway(), schemaCacher(getLocalSchema, getRemoteSchema));
+const host = getGateway();
+const schemaFetcher = schemaCacher(getLocalSchema, getRemoteSchema);
+startServer(tracer(), host, schemaFetcher);

@@ -14,9 +14,11 @@ import {
     blogPort,
     getHost,
     getSchema,
+    getTracer,
     getUser,
     schemaCacher,
     startServer,
+    zipkinLink,
 } from "../core";
 
 import {
@@ -24,6 +26,8 @@ import {
     getBlog,
     getBlogsForUser,
 } from "./impl";
+
+const serviceName = "blog";
 
 const resolvers = {
   Query: {
@@ -55,9 +59,13 @@ const linkResolvers = (schema: GraphQLSchema) => ({
   },
 });
 
+const tracer = getTracer(serviceName);
+
 const getRemoteSchema = async () => {
   const {hostname, port, protocol} = getUser();
-  const userSchema = await getSchema(`${protocol}//${hostname}:${port}/graphql`);
+
+  const userSchema = await getSchema(zipkinLink(tracer, "user", `${protocol}//${hostname}:${port}/graphql`));
+
   return mergeSchemas({
     resolvers: [
         resolvers,
@@ -71,4 +79,6 @@ const getRemoteSchema = async () => {
   });
 };
 
-startServer(getHost(blogPort), schemaCacher(getLocalSchema, getRemoteSchema));
+const host = getHost(blogPort);
+const schemaFetcher = schemaCacher(getLocalSchema, getRemoteSchema);
+startServer(tracer(), host, schemaFetcher);

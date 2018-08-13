@@ -1,40 +1,21 @@
-import {
-    graphiqlHapi,
-    graphqlHapi,
-} from "apollo-server-hapi";
-
 import Hapi from "hapi";
 
 import { SchemaGetter } from "./schema-stitching";
 
 import url from "url";
 
-export async function startServer(settings: url.UrlWithStringQuery, schemaGetter: SchemaGetter) {
+import { graphiql, graphql, prometheus, Tracer, zipkin  } from "./plugins";
+
+export async function startServer(tracer: Tracer, settings: url.UrlWithStringQuery, schemaGetter: SchemaGetter) {
     const {hostname, port} = settings;
     const server = new Hapi.Server({host: hostname, port});
 
-    await server.register({
-      options: {
-        graphqlOptions: async () => ({
-          schema: await schemaGetter(),
-        }),
-        path: "/graphql",
-        route: {
-          cors: true,
-        },
-      },
-      plugin: graphqlHapi,
-    });
-
-    await server.register({
-      options: {
-          graphiqlOptions: {
-              endpointURL: "/graphql",
-          },
-          path: "/",
-      },
-      plugin: graphiqlHapi,
-    });
+    await server.register([
+      graphiql(),
+      graphql(schemaGetter),
+      prometheus(),
+      zipkin(tracer, port),
+    ]);
 
     try {
       await server.start();

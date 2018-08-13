@@ -111,6 +111,36 @@ Once GraphiQL is running the following query should work
 }
 ```
 
+## Verifying Observability
+
+### With docker-compose
+
+#### Zipkin (distribute tracing)
+
+```sh
+> open http://localhost:9411/zipkin
+```
+
+Select service name "gateway" and span name "post"
+
+#### Prometheus
+
+```sh
+> open http://localhost:9090/graph
+```
+
+Enter "http_request_buckets_milliseconds_count" in the query field
+
+#### Grafana
+
+```sh
+> open http://localhost:8080
+```
+
+Import the [Node Exporter Server Metrics](https://grafana.com/dashboards/405) from Grafana.com
+
+Import the example services [dashboard](./grafana-dashboard.json).
+
 ## Future improvements
 
 - [x] Merge remote schemas with local schemas to avoid duplication.
