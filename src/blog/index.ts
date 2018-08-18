@@ -62,7 +62,7 @@ const linkResolvers = (schema: GraphQLSchema) => ({
 const tracer = getTracer(serviceName);
 
 const getRemoteSchema = async () => {
-  const {hostname, port, protocol} = getUser();
+  const {hostname, port, protocol} = await getUser();
 
   const userSchema = await getSchema(zipkinLink(tracer, "user", `${protocol}//${hostname}:${port}/graphql`));
 
@@ -79,6 +79,9 @@ const getRemoteSchema = async () => {
   });
 };
 
-const host = getHost(blogPort);
-const schemaFetcher = schemaCacher(getLocalSchema, getRemoteSchema);
-startServer(tracer(), host, schemaFetcher);
+startServer({
+    hostAddress: getHost(blogPort),
+    schemaGetter: schemaCacher(getLocalSchema, getRemoteSchema),
+    serviceName,
+    tracer: tracer(),
+});

@@ -111,9 +111,21 @@ Once GraphiQL is running the following query should work
 }
 ```
 
+## Verifying Service discovery
+
+The docker compose file includes a setup for consul which is used for registering and discovering services.   It also starts the services with consul integration enabled.
+
+To verify console is working
+
+```sh
+> open http://localhost:8500
+```
+
 ## Verifying Observability
 
 ### With docker-compose
+
+The docker compose file includes several observaility components.  This includes examples for how to verify these components.
 
 #### Zipkin (distribute tracing)
 
@@ -141,10 +153,17 @@ Import the [Node Exporter Server Metrics](https://grafana.com/dashboards/405) fr
 
 Import the example services [dashboard](./grafana-dashboard.json).
 
+## Known bugs
+- [ ] GraphQLError: Field "User.blogs" already exists in the schema. It cannot also be defined in this type extension.
+- [ ] Metrics don't return to zero levels without a restart
+
 ## Future improvements
 
 - [x] Merge remote schemas with local schemas to avoid duplication.
 - [x] Build schema refresh logic in schema loader such that schemas can be refreshed at a specified interval.
 - [ ] Use a service discover tool like Consul to register each service and have the gateway use it.
 - [x] Create Docker compose file to make running services easier
+- [ ] Fix bug with 
+- [ ] Configure apollo-link-retry for retries and client load balancing
+- [ ] Use apollo-link-retry for schema stitching to manage retries and back offs
 - [ ] Dockerize each service and provide a Kubernetes deployable example with infrastructure.  ie: Consule & Envoy.

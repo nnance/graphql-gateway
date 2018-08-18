@@ -19,8 +19,8 @@ const serviceName = "gateway";
 const tracer = getTracer(serviceName);
 
 const getRemoteSchema = async () => {
-  const blog = getBlog();
-  const user = getUser();
+  const blog = await getBlog();
+  const user = await getUser();
 
   return mergeSchemas({
       schemas: [
@@ -44,6 +44,9 @@ const resolvers = {
 
 const getLocalSchema = async () => makeExecutableSchema({ typeDefs, resolvers });
 
-const host = getGateway();
-const schemaFetcher = schemaCacher(getLocalSchema, getRemoteSchema);
-startServer(tracer(), host, schemaFetcher);
+startServer({
+  hostAddress: getGateway(),
+  schemaGetter: schemaCacher(getLocalSchema, getRemoteSchema),
+  serviceName,
+  tracer: tracer(),
+});

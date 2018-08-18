@@ -47,6 +47,12 @@ services:
       - USERADDR=http://user:3011
       - BLOGADDR=http://blog:3010
 
+  consul:
+    image: consul
+    container_name: dev-consul
+    ports:
+      - 8500:8500
+
   # The zipkin process services the UI, and also exposes a POST endpoint that
   # instrumentation can send trace data to. Scribe is enabled by default.
   zipkin:
@@ -67,6 +73,7 @@ services:
   # Prometheus time series DB for metrics
   prometheus:
     image: prom/prometheus:latest
+    container_name: prometheus
     volumes:
         - ./prometheus.yml:/etc/prometheus/prometheus.yml
     command:
@@ -75,10 +82,12 @@ services:
         - "9090:9090"
   node-exporter:
     image: prom/node-exporter:latest
+    container_name: node-exporter
     ports:
         - "9100:9100"
   grafana:
     image: grafana/grafana
+    container_name: grafana
     ports:
         - "8080:3000"
     depends_on:
