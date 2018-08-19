@@ -8,8 +8,6 @@ import {
 
 import { HttpLogger } from "zipkin-transport-http";
 
-import { zipkinMiddleware } from "../zipkin/zipkin-instrumentation-hapi";
-
 export { Tracer } from "zipkin";
 
 const zipkinHost = process.env.ZIPKIN_HOST || "http://zipkin:9411";
@@ -31,11 +29,3 @@ export const getTracer = (localServiceName: string) => (id?: TraceId) => {
     }
     return tracer;
 };
-
-export const zipkin = (tracer: Tracer, port: string | undefined) => ({
-    options: {
-        port: parseInt(port || "0", 10),
-        tracer,
-    },
-    plugin: zipkinMiddleware,
-});

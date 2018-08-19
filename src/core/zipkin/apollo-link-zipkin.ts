@@ -3,7 +3,7 @@ import { createHttpLink } from "apollo-link-http";
 
 import { TraceId } from "zipkin";
 
-import { Tracer } from "../plugins/zipkin";
+import { Tracer } from "./tracer";
 
 import { Fetcher } from "../schema-stitching";
 
