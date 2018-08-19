@@ -4,9 +4,15 @@ import { SchemaGetter } from "./schema-stitching";
 
 import url from "url";
 
-import { graphiql, graphql, prometheus, Tracer, zipkin  } from "./plugins";
+import {
+  graphiql,
+  graphql,
+  Tracer,
+  zipkin,
+} from "./plugins";
 
-import { consul } from "./config";
+import { consulMiddleware } from "./consul/consul-hapi";
+import { prometheusMiddleware } from "./prometheus/prometheus-hapi";
 
 export interface IServerOptions {
     hostAddress: url.UrlWithStringQuery;
@@ -22,28 +28,21 @@ export async function startServer(options: IServerOptions) {
     await server.register([
       graphiql(),
       graphql(options.schemaGetter),
-      prometheus(),
-      zipkin(options.tracer, port),
     ]);
 
-    server.route({
-      // tslint:disable-next-line:no-console
-      handler: () => "OK",
-      method: "GET",
-      path: "/_health",
-    });
+    if (process.env.NODE_ENV === "docker") {
+      await server.register([{
+          options: { serviceName: options.serviceName },
+          plugin: consulMiddleware,
+        }, {
+          plugin: prometheusMiddleware,
+        },
+        zipkin(options.tracer, port),
+      ]);
+    }
 
     try {
       await server.start();
-      await consul.agent.service.register({
-        address: options.serviceName,
-        check: {
-          http: `http://${options.serviceName}:${port}/_health`,
-          interval: "10s",
-        },
-        name: options.serviceName,
-        port: Number(server.info.port),
-      });
     } catch (err) {
       // tslint:disable-next-line:no-console
       console.log(`Error while starting server: ${err.message}`);
